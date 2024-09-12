@@ -2,6 +2,17 @@ import { redis } from "../lib/redis.js";
 import Product from "../models/product.js";
 import cloudinary from "../lib/cloudinary.js";
 
+const updatedFeaturedProductsCache = async () => {
+    try {
+        const featuredProducts = await Product.find({
+            isFeatured: true,
+        }).lean();
+        await redis.set("featured_products", JSON.stringify(featuredProducts));
+    } catch (error) {
+        console.log("Error in updated featured products cache: ", error);
+    }
+};
+
 export const getAllProducts = async (req, res) => {
     try {
         const products = await Product.find({});
@@ -127,6 +138,24 @@ export const getProductsByCategory = async (req, res) => {
         res.json({ products });
     } catch (error) {
         console.log("Error in get products by category controller: ", error);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+export const toggleFeaturedProduct = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const product = await Product.findById(id);
+        if (product) {
+            product.isFeatured = !product.isFeatured;
+            const updatedProduct = await product.save();
+            await updatedFeaturedProductsCache();
+            res.json(updatedProduct);
+        } else {
+            res.status(404).json({ message: "Product not found" });
+        }
+    } catch (error) {
+        console.log("Error in toggle featured product controller: ", error);
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
