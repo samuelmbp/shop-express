@@ -1,3 +1,7 @@
+import Coupon from "../models/coupon.js";
+import Order from "../models/order.js";
+import { stripe } from "../lib/stripe.js";
+
 export const createCheckoutSession = async (req, res) => {
     try {
         const { products, couponCode } = req.body;
@@ -58,6 +62,13 @@ export const createCheckoutSession = async (req, res) => {
             metadata: {
                 userId: req.user._id.toString(),
                 couponCode: couponCode || "",
+                products: JSON.stringify(
+                    products.map((product) => ({
+                        id: product.id,
+                        quantity: product.quantity,
+                        price: product.price,
+                    }))
+                ),
             },
         });
 
@@ -70,7 +81,59 @@ export const createCheckoutSession = async (req, res) => {
             id: session.id,
             totalAmount: totalAmount / 100,
         });
-    } catch (error) {}
+    } catch (error) {
+        console.error("Error processing checkout session: ", error);
+        res.status(500).json({
+            message: "Error processing checkout session",
+            error: error.message,
+        });
+    }
+};
+
+export const checkoutSuccess = async (req, res) => {
+    try {
+        const { session_id } = req.body;
+        const session = await stripe.checkout.sessions.retrieve(session_id);
+        if (session.payment_status === "paid") {
+            if (session.metadata.couponCode) {
+                await Coupon.findOneAndUpdate(
+                    {
+                        code: session.metadata.couponCode,
+                        userId: session.metadata.userId,
+                    },
+                    { isActive: false }
+                );
+            }
+
+            const products = JSON.parse(session.metadata.products);
+            const newOrder = new Order({
+                user: session.metadata.userId,
+                products: products.map((product) => ({
+                    product: product.id,
+                    quantity: product.quantity,
+                    price: product.price,
+                })),
+                // Convert from pennies to pounds
+                totalAmount: session.amount_total / 100,
+                stripeSessionId: session.id,
+            });
+
+            await newOrder.save();
+
+            res.json({
+                success: true,
+                message:
+                    "Payment successful, order created and coupon applied if used",
+                orderId: newOrder._id,
+            });
+        }
+    } catch (error) {
+        console.error("Error processing successful checkout: ", error);
+        res.status(500).json({
+            message: "Error processing successful checkout",
+            error: error.message,
+        });
+    }
 };
 
 async function createStripeCoupon(discountPercentage) {
