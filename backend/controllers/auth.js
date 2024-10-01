@@ -159,5 +159,10 @@ export const refreshToken = async (req, res) => {
     }
 };
 
-// TODO: Implement get profile
-export const getProfile = (req, res) => {};
+export const getProfile = (req, res) => {
+    try {
+        res.json(req.user);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
