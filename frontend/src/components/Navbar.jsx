@@ -8,10 +8,10 @@ const Navbar = () => {
     return (
         <header className="fixed top-0 left-0 w-full bg-gray-900 bg-opacity-90 backdrop-blur-md shadow-lg z-40 transition-all duration-300 border-b border-emerald-800">
             <div className="container mx-auto px-4 py-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-center justify-between">
                     <Link
                         to={"/"}
-                        className="text-2xl font-bold text-emerald-400 items-center space-x-2 flex"
+                        className="text-2xl sm:text-2xl font-bold text-emerald-400 items-center space-x-2 flex mb-2"
                     >
                         E-Commerce S.E.
                     </Link>
