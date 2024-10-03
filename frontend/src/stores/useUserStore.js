@@ -2,7 +2,7 @@ import { create } from "zustand";
 import axiosInstance from "../lib/axios";
 import { toast } from "react-hot-toast";
 
-export const useUserStore = create((set, get) => ({
+export const useUserStore = create((set) => ({
     user: null,
     loading: false,
     checkingAuth: true,
@@ -43,6 +43,19 @@ export const useUserStore = create((set, get) => ({
         }
     },
 
+    logout: async () => {
+        set({ user: null });
+        try {
+            await axiosInstance.post("/auth/logout");
+            set({ user: null });
+            toast.success("Logout successfully");
+        } catch (error) {
+            toast.error(
+                error.response.data.message || "An error occurred during logout"
+            );
+        }
+    },
+
     checkAuth: async () => {
         set({ checkingAuth: true });
         try {
@@ -54,3 +67,5 @@ export const useUserStore = create((set, get) => ({
         }
     },
 }));
+
+// TODO: Implement the axios interceptor to handle refresh token
