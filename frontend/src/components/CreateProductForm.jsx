@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { PlusCircle, Upload, Loader } from "lucide-react";
 import CreateProductInput from "./CreateProductInput";
+import { useProductStore } from "../stores/useProductStore";
 
 const categories = [
     "jeans",
@@ -21,12 +22,23 @@ const CreateProductForm = () => {
         category: "",
         image: "",
     });
-    const loading = false;
+    const { createProduct, loading } = useProductStore();
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log("Submit");
-        console.log(newProduct);
+        try {
+            await createProduct(newProduct);
+
+            setNewProduct({
+                name: "",
+                description: "",
+                price: 0,
+                category: "",
+                image: "",
+            });
+        } catch (error) {
+            console.log("Error in creating a product: ", error);
+        }
     };
 
     const handleImageChange = (event) => {
@@ -59,6 +71,7 @@ const CreateProductForm = () => {
             <form onSubmit={handleSubmit} className="space-y-3">
                 <CreateProductInput
                     label={"Name"}
+                    id={"name"}
                     type="text"
                     name="name"
                     value={newProduct.name}
@@ -69,6 +82,7 @@ const CreateProductForm = () => {
 
                 <CreateProductInput
                     label={"Description"}
+                    id={"description"}
                     type="textarea"
                     name="description"
                     value={newProduct.description}
@@ -82,6 +96,7 @@ const CreateProductForm = () => {
 
                 <CreateProductInput
                     label={"Price"}
+                    id={"price"}
                     type="number"
                     name="price"
                     value={newProduct.price}
