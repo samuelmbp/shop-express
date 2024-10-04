@@ -12,9 +12,9 @@ const Navbar = () => {
                 <div className="flex flex-col sm:flex-row items-center justify-between">
                     <Link
                         to={"/"}
-                        className="text-2xl sm:text-2xl font-bold text-emerald-400 items-center space-x-2 flex mb-2"
+                        className="text-2xl sm:text-2xl font-bold text-emerald-400 items-center space-x-2 flex mb-3"
                     >
-                        E-Commerce S.E.
+                        Shop Express
                     </Link>
                     <nav className="flex flex-wrap items-center gap-4">
                         <Link
@@ -44,6 +44,7 @@ const Navbar = () => {
                         )}
                         {isAdmin && (
                             <Link
+                                to={"/secret-dashboard"}
                                 className="bg-emerald-700 hover:bg-emerald-600 text-white px-3 py-1 rounded-md font-medium
 								 transition duration-300 ease-in-out flex items-center"
                             >
