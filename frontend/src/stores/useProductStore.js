@@ -37,6 +37,25 @@ export const useProductStore = create((set) => ({
             );
         }
     },
-    deleteProduct: async (productId) => {},
-    toggleFeaturedProduct: async (productId) => {},
+    // deleteProduct: async (productId) => {},
+    toggleFeaturedProduct: async (productId) => {
+        set({ loading: true });
+
+        try {
+            const res = await axiosInstance.patch(`/products/${productId}`);
+            set((prevProducts) => ({
+                products: prevProducts.products.map((product) =>
+                    product._id === productId
+                        ? { ...product, isFeatured: res.data.isFeatured }
+                        : product
+                ),
+                loading: false,
+            }));
+        } catch (error) {
+            set({ loading: false });
+            toast.error(
+                error.response.data.message || "Failed to updated product"
+            );
+        }
+    },
 }));

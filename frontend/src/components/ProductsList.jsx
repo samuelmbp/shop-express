@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { Trash, Star } from "lucide-react";
 import { useProductStore } from "../stores/useProductStore";
-import { useEffect } from "react";
 import TableHeader from "./TableHeader";
 
 const ProductsList = () => {
