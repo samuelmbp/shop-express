@@ -7,8 +7,6 @@ const ProductsList = () => {
     const { products, deleteProduct, toggleFeaturedProduct } =
         useProductStore();
 
-    console.log("ProductsList", products);
-
     return (
         <motion.div
             className="bg-gray-800 rounded-lg overflow-hidden max-w-4xl mx-auto"
