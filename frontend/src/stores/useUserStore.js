@@ -41,7 +41,7 @@ export const useUserStore = create((set) => ({
             set({ loading: false });
             toast.error(error.response.data.message || "An error occurred");
         }
-    },
+},
 
     logout: async () => {
         set({ user: null });

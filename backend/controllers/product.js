@@ -110,7 +110,7 @@ export const deleteProduct = async (req, res) => {
 export const getRecommendedProducts = async (req, res) => {
     try {
         const products = await Product.aggregate([
-            ({
+            {
                 $sample: { size: 3 },
             },
             {
@@ -121,7 +121,7 @@ export const getRecommendedProducts = async (req, res) => {
                     image: 1,
                     description: 1,
                 },
-            }),
+            },
         ]);
 
         res.json(products);
