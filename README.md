@@ -1,1 +1,3 @@
-# shop-express
+# Shop Express 
+
+A full stack e-commerce web application.
